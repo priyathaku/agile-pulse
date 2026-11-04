@@ -71,7 +71,7 @@ Optimize for functional completeness, clean layered code, solid REST API design,
    docker compose up --build
    ```
 4. Access the applications:
-   - **Frontend Web App**: [http://localhost:3000](http://localhost:3000)
+   - **Frontend Web App (Local Dev)**: [http://localhost:5173](http://localhost:5173) *(or [http://localhost:3000](http://localhost:3000) when running inside Docker)*
    - **Backend REST API**: [http://localhost:8000](http://localhost:8000)
    - **Interactive OpenAPI/Swagger**: [http://localhost:8000/docs](http://localhost:8000/docs)
 
@@ -222,13 +222,14 @@ While AgilePulse provides a complete, production-grade foundation for small team
 ---
 
 ## 🔗 Links & Resources
-- **Live Demo Link Placeholder**: `https://demo.agilepulse.dev`
-- **Walkthrough Video Placeholder**: `https://youtu.be/agilepulse-demo-walkthrough`
+- **Frontend App (Local)**: [http://localhost:5173](http://localhost:5173)
+- **Backend API Docs (Swagger)**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Walkthrough Video**: *(Upload your video link or GitHub release link here)*
 - **Interactive REST Collection**: See [`api_collection.http`](./api_collection.http)
 - **Detailed Documentation**:
-  - [Architecture Specification](docs/ARCHITECTURE.md)
-  - [Complete API Reference](docs/API.md)
-  - [Database Schema & ER Diagram](docs/DATABASE.md)
-  - [Design Decisions & Tradeoffs](docs/DESIGN_DECISIONS.md)
-  - [Security Considerations](docs/SECURITY.md)
-  - [AI Usage Statement](docs/AI_USAGE.md)
+  - [Architecture Specification](./docs/ARCHITECTURE.md)
+  - [Complete API Reference](./docs/API.md)
+  - [Database Schema & ER Diagram](./docs/DATABASE.md)
+  - [Design Decisions & Tradeoffs](./docs/DESIGN_DECISIONS.md)
+  - [Security Considerations](./docs/SECURITY.md)
+  - [AI Usage Statement](./docs/AI_USAGE.md)
