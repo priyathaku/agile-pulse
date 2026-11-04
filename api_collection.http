@@ -1,0 +1,287 @@
+### ====================================================================
+### Agile Project Management Tool - API Request Collection (.http)
+### Base URL: http://localhost:8000/api/v1
+### ====================================================================
+
+@baseUrl = http://localhost:8000/api/v1
+@contentType = application/json
+
+### --------------------------------------------------------------------
+### 1. AUTHENTICATION & USERS
+### --------------------------------------------------------------------
+
+### Register a new user
+# @name register
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "developer@test.com",
+  "password": "Password123!",
+  "full_name": "Dev User"
+}
+
+### Login as Alice (Demo Owner / Admin)
+# @name loginAlice
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "alice@example.com",
+  "password": "Password123!"
+}
+
+### Save access token from Alice's login
+@authToken = {{loginAlice.response.body.access_token}}
+
+### Get Current User Profile (/auth/me)
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{authToken}}
+
+### List All Users (for assigning tasks & adding members)
+GET {{baseUrl}}/users
+Authorization: Bearer {{authToken}}
+
+### Logout
+POST {{baseUrl}}/auth/logout
+Authorization: Bearer {{authToken}}
+
+
+### --------------------------------------------------------------------
+### 2. PROJECTS
+### --------------------------------------------------------------------
+
+### List Projects (with optional status & search query)
+GET {{baseUrl}}/projects?status=active&search=
+Authorization: Bearer {{authToken}}
+
+### Create a New Project
+# @name createProject
+POST {{baseUrl}}/projects
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "name": "Payment Gateway Integration",
+  "key": "PAY",
+  "description": "Integration with Stripe and PayPal checkout flows."
+}
+
+@projectId = {{createProject.response.body.id}}
+
+### Get Project Details by ID
+GET {{baseUrl}}/projects/1
+Authorization: Bearer {{authToken}}
+
+### Get Project Dashboard (Status counts, overall progress %, workload per assignee)
+GET {{baseUrl}}/projects/1/dashboard
+Authorization: Bearer {{authToken}}
+
+### Update Project
+PATCH {{baseUrl}}/projects/1
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "description": "Updated project description with latest sprint objectives."
+}
+
+### List Project Members
+GET {{baseUrl}}/projects/1/members
+Authorization: Bearer {{authToken}}
+
+### Add a Member to Project
+POST {{baseUrl}}/projects/1/members
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "user_email": "bob@example.com",
+  "role": "member"
+}
+
+### Get Project Audit Trail / Activity Log
+GET {{baseUrl}}/projects/1/activity
+Authorization: Bearer {{authToken}}
+
+
+### --------------------------------------------------------------------
+### 3. USER STORIES (Strict Hierarchy: Project -> Story)
+### --------------------------------------------------------------------
+
+### List Stories for Project (Filter by status, priority)
+GET {{baseUrl}}/projects/1/stories?status=In%20Progress
+Authorization: Bearer {{authToken}}
+
+### Create a User Story under Project
+# @name createStory
+POST {{baseUrl}}/projects/1/stories
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Stripe Webhook Signature Verification",
+  "description": "Ensure incoming webhook requests verify HMAC sha256 signatures before processing.",
+  "acceptance_criteria": "- Rejects requests with missing signature header.\n- Validates timestamp freshness (< 5 mins).\n- Dispatches successful events.",
+  "status": "In Progress",
+  "priority": "Critical",
+  "story_points": 5,
+  "assignee_id": 2
+}
+
+@storyId = {{createStory.response.body.id}}
+
+### Get User Story Details (including child tasks and comments)
+GET {{baseUrl}}/stories/1
+Authorization: Bearer {{authToken}}
+
+### Update User Story
+PATCH {{baseUrl}}/stories/1
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "priority": "High",
+  "story_points": 8
+}
+
+### Reorder User Story Position (Drag-and-Drop)
+PUT {{baseUrl}}/stories/1/reorder
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "position": 1500.0,
+  "status": "In Progress"
+}
+
+
+### --------------------------------------------------------------------
+### 4. TASKS (Strict Hierarchy: Story -> Task)
+### --------------------------------------------------------------------
+
+### List Tasks under Story
+GET {{baseUrl}}/stories/1/tasks
+Authorization: Bearer {{authToken}}
+
+### Create Task under User Story
+# @name createTask
+POST {{baseUrl}}/stories/1/tasks
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Implement webhook cryptographic validator",
+  "description": "Use crypto library to compute and compare sha256 HMAC digest.",
+  "status": "To Do",
+  "priority": "High",
+  "estimate_hours": 4.5,
+  "due_date": "2026-11-10T18:00:00Z",
+  "assignee_id": 2
+}
+
+@taskId = {{createTask.response.body.id}}
+
+### Get Task Details
+GET {{baseUrl}}/tasks/1
+Authorization: Bearer {{authToken}}
+
+### Update Task Status (Triggers story auto-promotion if all tasks become Done!)
+PATCH {{baseUrl}}/tasks/1
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": "Done"
+}
+
+### Reorder Task Position
+PUT {{baseUrl}}/tasks/1/reorder
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "position": 2500.0,
+  "status": "In Progress"
+}
+
+### Get Current User's Assigned Tasks ("My Tasks" view)
+GET {{baseUrl}}/tasks/my?status=In%20Progress
+Authorization: Bearer {{authToken}}
+
+
+### --------------------------------------------------------------------
+### 5. COMMENTS
+### --------------------------------------------------------------------
+
+### Add Comment to User Story
+POST {{baseUrl}}/stories/1/comments
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "content": "Verified the acceptance criteria with QA team. Ready for final review."
+}
+
+### List Comments on User Story
+GET {{baseUrl}}/stories/1/comments
+Authorization: Bearer {{authToken}}
+
+### Add Comment to Task
+POST {{baseUrl}}/tasks/1/comments
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "content": "Cryptographic tests passed with 100% code coverage."
+}
+
+
+### --------------------------------------------------------------------
+### 6. NOTIFICATIONS
+### --------------------------------------------------------------------
+
+### List User Notifications
+GET {{baseUrl}}/notifications?unread_only=false
+Authorization: Bearer {{authToken}}
+
+### Mark Single Notification Read
+PATCH {{baseUrl}}/notifications/1/read
+Authorization: Bearer {{authToken}}
+
+### Mark All Notifications Read
+POST {{baseUrl}}/notifications/mark-all-read
+Authorization: Bearer {{authToken}}
+
+
+### --------------------------------------------------------------------
+### 7. BACKGROUND JOBS & ASYNC WORKFLOWS
+### --------------------------------------------------------------------
+
+### Request Async Project Report Generation (Returns 202 Accepted + job_id)
+# @name requestReport
+POST {{baseUrl}}/projects/1/reports
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "format": "csv"
+}
+
+@reportJobId = {{requestReport.response.body.job_id}}
+
+### Poll Background Job Status
+GET {{baseUrl}}/jobs/{{reportJobId}}
+Authorization: Bearer {{authToken}}
+
+### List Recent Background Jobs
+GET {{baseUrl}}/jobs?status=succeeded
+Authorization: Bearer {{authToken}}
+
+### Retry a Dead / Failed Background Job
+POST {{baseUrl}}/jobs/{{reportJobId}}/retry
+Authorization: Bearer {{authToken}}
+
+### Download Completed Report (CSV or JSON)
+GET {{baseUrl}}/projects/1/reports/{{reportJobId}}/download
+Authorization: Bearer {{authToken}}
