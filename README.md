@@ -224,7 +224,7 @@ While AgilePulse provides a complete, production-grade foundation for small team
 ## 🔗 Links & Resources
 - **Frontend App (Local)**: [http://localhost:5173](http://localhost:5173)
 - **Backend API Docs (Swagger)**: [http://localhost:8000/docs](http://localhost:8000/docs)
-- **Walkthrough Video**: *(Upload your video link or GitHub release link here)*
+- **📹 Walkthrough Video**: [Watch KPIT Demo Video (`kpit project vdo.mp4`)](./kpit%20project%20vdo.mp4)
 - **Interactive REST Collection**: See [`api_collection.http`](./api_collection.http)
 - **Detailed Documentation**:
   - [Architecture Specification](./docs/ARCHITECTURE.md)
